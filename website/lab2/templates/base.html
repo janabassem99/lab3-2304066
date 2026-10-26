@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Tasks{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='validation.js') }}" defer></script>
+</head>
+<body>
+    <nav class="lab-switcher" aria-label="Switch lab">
+        <a href="{{ request.script_root }}/" class="active" aria-current="page">Lab 2 · To-Do</a>
+        <a href="/library/">Lab 3 · Library</a>
+    </nav>
+    <header class="site-header">
+        <a class="brand" href="{{ url_for('home') }}"><span class="brand-icon" aria-hidden="true">✓</span> My Tasks</a>
+        {% if session.get('user_id') %}
+        <div class="account">
+            <span class="greeting">Hi, {{ session['name'] }}</span>
+            <form method="post" action="{{ url_for('logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="button secondary small" type="submit">Logout</button>
+            </form>
+        </div>
+        {% endif %}
+    </header>
+    <main class="{% block main_class %}auth-layout{% endblock %}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <p class="notice {{ category }}" role="status">{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>A little progress, every day.</footer>
+</body>
+</html>

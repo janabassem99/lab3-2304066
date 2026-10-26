@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Create an account · My Tasks{% endblock %}
+{% block content %}
+<section class="card auth-card">
+    <p class="eyebrow">A fresh start</p>
+    <h1>Create an account</h1>
+    <p class="intro">Keep your tasks organised in one place.</p>
+    <form method="post" action="{{ url_for('register') }}" data-validation="register" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" value="{{ values.name }}" autocomplete="name" aria-describedby="name-error" aria-invalid="{{ 'true' if errors.get('name') else 'false' }}">
+            <p class="field-error" id="name-error" data-error="name" aria-live="polite">{{ errors.get('name', '') }}</p>
+        </div>
+        <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" value="{{ values.email }}" autocomplete="email" aria-describedby="email-error" aria-invalid="{{ 'true' if errors.get('email') else 'false' }}">
+            <p class="field-error" id="email-error" data-error="email" aria-live="polite">{{ errors.get('email', '') }}</p>
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" aria-describedby="password-error" aria-invalid="{{ 'true' if errors.get('password') else 'false' }}">
+            <p class="field-error" id="password-error" data-error="password" aria-live="polite">{{ errors.get('password', '') }}</p>
+        </div>
+        <div class="field">
+            <label for="confirm_password">Confirm password</label>
+            <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" aria-describedby="confirm-password-error" aria-invalid="{{ 'true' if errors.get('confirm_password') else 'false' }}">
+            <p class="field-error" id="confirm-password-error" data-error="confirm_password" aria-live="polite">{{ errors.get('confirm_password', '') }}</p>
+        </div>
+        <button class="button full" type="submit">Create account</button>
+    </form>
+    <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+</section>
+{% endblock %}
