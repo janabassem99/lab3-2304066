@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Lab 3 - Library website",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/website/app.py",
+      "cwd": "${workspaceFolder}/website",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}
