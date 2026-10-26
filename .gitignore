@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+website/.env
+website/static/uploads/*
+!website/static/uploads/.gitkeep
+*.log
+.pytest_cache/
+website/lab2/instance/
+
+# Keep local configuration and runtime data out of every fork.
+**/.env
+**/.env.*
+!**/.env.example
+**/instance/
