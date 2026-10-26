@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Discussion guide · The Reading Room{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('library.catalog') }}">← Back to the library</a>
+<div class="guide"><p class="eyebrow">LAB 3 · PART II</p><h1>Know your library.</h1><p class="guide-intro">A short walkthrough for the database discussion.</p>
+<section><h2>1. Start with the schema</h2><p><strong>AUTHOR</strong> is the parent table. Its primary key is <code>author_id</code>. <strong>BOOK</strong> is the child table. Its primary key is <code>book_id</code>, and its foreign key <code>author_id</code> references the author.</p><pre><code>AUTHOR (author_id, name, country)
+BOOK   (book_id, title, price, author_id)</code></pre><p>One author can have many books. Each book in this app must have one existing author because its foreign key is <code>NOT NULL</code>.</p></section>
+<section><h2>2. Explain each data type</h2><p><code>INT</code> stores IDs. <code>VARCHAR</code> stores names, titles and countries. <code>DECIMAL(10,2)</code> stores prices exactly, with 10 total digits and 2 after the decimal point. <code>NOT NULL</code> prevents missing values. Form validation also prevents empty text.</p></section>
+<section><h2>3. Show the two tables</h2><pre><code>SELECT book_id, title, price, author_id FROM BOOK;
+SELECT author_id, name, country FROM AUTHOR;</code></pre><p>The website uses two separate queries. Book counts and display ordering happen in Python. There is no JOIN, GROUP BY or HAVING.</p></section>
+<section><h2>4. Add, edit and remove</h2><p>Add an author with ID <strong>9001</strong>, then a book with ID <strong>9001</strong> belonging to that author. Edit the title, price or author. Edit the author's name or country. Remove the book, then show that the author remains.</p><pre><code>INSERT INTO AUTHOR (author_id, name, country)
+VALUES (9001, 'Discussion Author', 'Egypt');
+
+UPDATE BOOK SET price = 22.50 WHERE book_id = 9001;
+
+DELETE FROM BOOK WHERE book_id = 9001;</code></pre><p>Forms send values separately from the SQL using <code>%s</code> placeholders. The connector safely treats input as data. A <code>WHERE</code> condition limits each edit or removal to the chosen row.</p></section>
+<section><h2>5. Demonstrate cascade deletion</h2><p>Add a second temporary book for author 9001. Open the author's Remove page and review the affected books. Confirm removal. The author and their books disappear in both the website and DBeaver.</p><pre><code>FOREIGN KEY (author_id) REFERENCES AUTHOR(author_id)
+    ON DELETE CASCADE</code></pre><p>The app sends only the author's DELETE. MySQL removes the related book rows automatically. A foreign key value that points to a nonexistent author causes MySQL error 1452.</p></section>
+<section><h2>6. Show both image bonuses</h2><p>Upload a cover when adding or editing a book. Upload a photo when adding or editing an author. Reload the collection to show both images persist. Images are kept in local files named after record IDs, so the database still has exactly two tables. The app removes matching image files when records are removed through the website.</p><p>Images must be PNG, JPG or WebP, smaller than 5 MB and at most 20 megapixels. The app verifies the image contents instead of trusting the filename.</p></section>
+<section class="guide-end"><h2>Ready for the discussion</h2><p>Run <code>problem2_DDL.sql</code> then <code>problem2_DML.sql</code> to restore the original 3 authors and 6 books. The DDL replaces the assignment database, so use it only when you intend to reset the data.</p><p>SQL and uploaded images are stored separately. If you reset the database, use <code>python manage.py reset</code> to reset records and clear old uploaded images together.</p></section>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A small library of books and authors. Database Lab 3, Part II.">
+  <title>{% block title %}The Reading Room{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  {% if request.endpoint != 'home' %}
+  <nav class="lab-switcher" aria-label="Switch lab">
+    <a href="/lab2/">Lab 2 · To-Do</a>
+    <a href="/library/" class="active" aria-current="page">Lab 3 · Library</a>
+  </nav>
+  {% endif %}
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{{ url_for('home') if request.endpoint == 'home' else url_for('library.catalog') }}"><span class="brand-mark" aria-hidden="true">{{ 'DB' if request.endpoint == 'home' else 'R.' }}</span><span>{{ 'Database Labs' if request.endpoint == 'home' else 'The Reading Room' }}<small>{{ 'JANA & FARIDA' if request.endpoint == 'home' else 'BOOKS & AUTHORS' }}</small></span></a>
+      <nav aria-label="Main navigation">
+        {% if request.endpoint != 'home' %}
+          <a href="{{ url_for('library.catalog', _anchor='books') }}">Books</a>
+          <a href="{{ url_for('library.catalog', _anchor='authors') }}">Authors</a>
+        {% endif %}
+        <a href="{{ url_for('library.discussion') }}">Discussion guide</a>
+        <button class="theme-toggle" type="button" aria-label="Switch color theme">Dark mode</button>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="main-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}<div class="notice {{ category }}" role="status">{{ message }}</div>{% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div><strong>{{ 'Database Labs' if request.endpoint == 'home' else 'The Reading Room' }}</strong><span>{{ 'Database Systems · Labs 2 & 3' if request.endpoint == 'home' else 'Database Systems · Lab 3 · Part II' }}</span></div>
+    <div class="credits"><span>Jana Bassem <strong>2304066</strong></span><span>Farida Mohamed <strong>2304245</strong></span></div>
+  </footer>
+</body>
+</html>

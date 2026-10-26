@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% set editing = record is not none %}
+{% block title %}{{ 'Edit' if editing else 'Add' }} {{ kind }} · The Reading Room{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('library.catalog', _anchor='books' if kind == 'book' else 'authors') }}">← Back to the library</a>
+<section class="form-layout">
+  <div class="form-intro"><p class="eyebrow">{{ 'A SMALL UPDATE' if editing else 'MAKE ROOM ON THE SHELF' }}</p><h1>{{ 'Edit this' if editing else 'Add a new' }}<br> {{ kind }}.</h1><p>{{ 'Update the details and keep your collection current.' if editing else 'A few details are all you need to grow your collection.' }}</p><div class="form-side-note"><strong>{{ 'Book cover' if kind == 'book' else 'Author photo' }}</strong><p>Add a personal touch with an optional image. PNG, JPG or WebP, up to 5 MB.</p></div></div>
+  <div class="form-panel">
+    {% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}
+    {% if kind == 'book' and not authors %}<div class="notice">You need an author before adding a book. <a href="{{ url_for('library.author_form') }}">Add an author first.</a></div>{% endif %}
+    <form method="post" enctype="multipart/form-data" class="record-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% set id_field = 'book_id' if kind == 'book' else 'author_id' %}
+      <div class="field"><label for="record-id">{{ kind|capitalize }} ID <span class="required">*</span></label><input id="record-id" name="{{ id_field }}" type="number" min="1" max="2147483647" value="{{ record[id_field] if editing else values.get(id_field, '') }}" {{ 'readonly' if editing else 'required' }}><small>{{ 'IDs stay fixed so existing references remain correct.' if editing else 'Use a unique positive number. For example, 107 for a book or 4 for an author.' }}</small></div>
+      {% if kind == 'book' %}
+      <div class="field"><label for="title">Book title <span class="required">*</span></label><input id="title" name="title" maxlength="150" required value="{{ values.get('title', '') }}" placeholder="The title on the cover"></div>
+      <div class="two-fields"><div class="field"><label for="price">Price <span class="required">*</span></label><input id="price" name="price" type="number" min="0" max="99999999.99" step="0.01" required value="{{ values.get('price', '') }}" placeholder="18.50"></div><div class="field"><label for="author-id">Author <span class="required">*</span></label><select id="author-id" name="author_id" required><option value="">Choose an author</option>{% for author in authors %}<option value="{{ author.author_id }}" {% if values.get('author_id', '')|string == author.author_id|string %}selected{% endif %}>{{ author.author_id }} · {{ author.name }}</option>{% endfor %}</select></div></div>
+      {% else %}
+      <div class="field"><label for="name">Author name <span class="required">*</span></label><input id="name" name="name" maxlength="100" required value="{{ values.get('name', '') }}" placeholder="The person behind the pages"></div>
+      <div class="field"><label for="country">Country <span class="required">*</span></label><input id="country" name="country" maxlength="50" required value="{{ values.get('country', '') }}" placeholder="For example, Egypt"></div>
+      {% endif %}
+      <div class="field upload-field"><label for="image">{{ 'Book cover' if kind == 'book' else 'Author photo' }} <span class="optional">optional</span></label><input id="image" name="image" type="file" accept="image/png,image/jpeg,image/webp" data-image-input><small>Choose a real image file. Uploading a new image replaces the current one.</small><img class="upload-preview {% if not has_image %}hidden{% endif %}" data-image-preview {% if has_image %}src="{{ url_for('library.image', kind=kind, record_id=record[id_field]) }}"{% endif %} alt="{{ 'Current image' if has_image else 'Selected image preview' }}">{% if has_image %}<label class="checkbox-label"><input type="checkbox" name="remove_image" value="1"> Remove the current image</label>{% endif %}</div>
+      <p class="required-note">* Required fields</p>
+      <div class="form-actions"><button class="button primary" type="submit" {% if kind == 'book' and not authors %}disabled{% endif %}>{{ 'Save changes' if editing else 'Add ' + kind }}</button><a class="button secondary" href="{{ url_for('library.catalog') }}">Cancel</a></div>
+    </form>
+  </div>
+</section>
+{% endblock %}
